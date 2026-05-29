@@ -1,41 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LWC Embed</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LWC Embed</title>
 </head>
 <body>
 
-    <script src="https://lancashiredev--dev.sandbox.my.salesforce.com/lightning/lightning.out.latest/index.iife.prod.js"></script>
+<script src="https://lancashiredev--dev.sandbox.my.salesforce.com/lightning/lightning.out.latest/index.iife.prod.js"></script>
+<style>
+.flowRuntimeContent, 
+.flowruntime-flow-container,
+.slds-scrollable_y {
+    overflow: visible !important;
+    overflow-y: visible !important;
+    height: auto !important;
+    max-height: none !important;
+}
+c-lwc-embed-flow {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+</style>
 
-    <lightning-out-application
-        id="loApp"
-        app-id="1UsPu00000001iTKAQ"
-        components="c-lwc-embed-flow">
-    </lightning-out-application>
+<lightning-out-application
+id="loApp"
+app-id="1UsPu00000001iTKAQ"
+components="c-lwc-embed-flow">
+</lightning-out-application>
 
-    <c-lwc-embed-flow></c-lwc-embed-flow>
+<c-lwc-embed-flow></c-lwc-embed-flow>
 
-    <script>
-        async function init() {
-            const loApp = document.getElementById('loApp');
-            const response = await fetch('/api/guest-session');
-            const data = await response.json();
-            loApp.setAttribute('frontdoor-url', data.frontdoorUrl);
-        }
+<script>
+    async function init() {
+        const loApp = document.getElementById('loApp');
+        const response = await fetch('/api/guest-session');
+        const data = await response.json();
+        loApp.setAttribute('frontdoor-url', data.frontdoorUrl);
+    }
 
-        if (customElements.get('lightning-out-application')) {
-            init();
-        } else {
-            const check = setInterval(() => {
-                if (customElements.get('lightning-out-application')) {
-                    clearInterval(check);
-                    init();
-                }
-            }, 100);
-        }
-    </script>
+    if (customElements.get('lightning-out-application')) {
+        init();
+    } else {
+        const check = setInterval(() => {
+            if (customElements.get('lightning-out-application')) {
+                clearInterval(check);
+                init();
+            }
+        }, 100);
+    }
+</script>
 
 </body>
 </html>
