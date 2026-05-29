@@ -6,14 +6,15 @@
   <title>LWC Embed</title>
   <script src="https://lancashiredev--dev.sandbox.my.salesforce.com/lightning/lightning.out.latest/index.iife.prod.js"></script>
   <style>  
-    body {
-      margin: 0;
+  body {
+  margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden; /* Prevents scrollbars entirely */
-  box-sizing: border-box; /* Ensures padding/borders don't add to the size */
+  overflow: hidden; 
+  box-sizing: border-box; 
     }
+    
     /* .flowRuntimeContent,
     .flowruntime-flow-container,
     .slds-scrollable_y,
@@ -39,7 +40,7 @@
     components="c-lwc-embed-flow">
   </lightning-out-application>
 
-  <c-lwc-embed-flow></c-lwc-embed-flow>
+  <c-lwc-embed-flow style="width: 101%;"></c-lwc-embed-flow>
 
   <script>
     async function init() {
