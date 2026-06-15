@@ -3,20 +3,74 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LWC Embed</title>
+  <title>LWC Embed - Create Person Account</title>
   <script src="https://lancashiredev--dev.sandbox.my.salesforce.com/lightning/lightning.out.latest/index.iife.prod.js"></script>
   <style>  
     body {
       margin: 0;
-      padding: 0;
+      padding: 20px;
       width: 100%;
       height: 100%;
-      overflow: hidden; 
-      box-sizing: border-box; 
+      font-family: Arial, sans-serif;
+      box-sizing: border-box;
+      overflow: auto;
+    }
+    
+    .button-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    
+    button {
+      background-color: #0070d2;
+      color: white;
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    button:hover {
+      background-color: #005fb2;
+    }
+    
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .status {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 4px;
+      display: none;
+    }
+    
+    .status.success {
+      background-color: #d4edda;
+      color: #155724;
+      display: block;
+    }
+    
+    .status.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      display: block;
     }
   </style>
 </head>
 <body>
+  <div class="button-container">
+    <button id="createBtn">Create Person Account</button>
+    <div id="status" class="status"></div>
+  </div>
+  
   <lightning-out-application
     id="loApp"
     app-id="1UsPu00000001iTKAQ"
@@ -26,8 +80,61 @@
   <c-lwc-embed-flow id="lwcComponent" style="width: 101%;"></c-lwc-embed-flow>
 
   <script>
-    // Define the name string to pass to Salesforce
-    const sampleName = "John Doe";
+    let lwcComponentReady = false;
+    let creationInProgress = false;
+    
+    function showStatus(message, type) {
+      const statusDiv = document.getElementById('status');
+      statusDiv.textContent = message;
+      statusDiv.className = `status ${type}`;
+      setTimeout(() => {
+        statusDiv.style.display = 'none';
+        statusDiv.className = 'status';
+      }, 5000);
+    }
+    
+    function createAccount() {
+      if (creationInProgress) {
+        showStatus('Creation already in progress...', 'error');
+        return;
+      }
+      
+      if (!lwcComponentReady) {
+        showStatus('LWC component not ready yet. Please wait...', 'error');
+        return;
+      }
+      
+      // Generate name with timestamp
+      const now = new Date();
+      const dateTimeString = now.getFullYear() + '-' + 
+                             String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                             String(now.getDate()).padStart(2, '0') + ' ' +
+                             String(now.getHours()).padStart(2, '0') + ':' +
+                             String(now.getMinutes()).padStart(2, '0') + ':' +
+                             String(now.getSeconds()).padStart(2, '0');
+      
+      const sampleName = "John Doe " + dateTimeString;
+      
+      creationInProgress = true;
+      const btn = document.getElementById('createBtn');
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+      
+      showStatus('Creating person account...', 'success');
+      
+      const lwcComponent = document.getElementById('lwcComponent');
+      if (lwcComponent) {
+        lwcComponent.externalName = sampleName;
+        console.log('Name passed to LWC:', sampleName);
+      }
+      
+      // Reset button after 3 seconds
+      setTimeout(() => {
+        creationInProgress = false;
+        btn.disabled = false;
+        btn.textContent = 'Create Person Account';
+      }, 3000);
+    }
 
     async function init() {
       try {
@@ -39,22 +146,40 @@
         const data = await response.json();
         loApp.setAttribute('frontdoor-url', data.frontdoorUrl);
         
-        // Wait for LWC component to be ready and pass the name
         setTimeout(() => {
           const lwcComponent = document.getElementById('lwcComponent');
           if (lwcComponent) {
-            // Pass the name string to LWC component
-            lwcComponent.externalName = sampleName;
-            console.log('Name passed to LWC:', sampleName);
-          } else {
-            console.error('LWC component not found');
+            lwcComponentReady = true;
+            console.log('LWC component is ready');
+            showStatus('Ready! Click the button to create an account', 'success');
+            
+            // Listen for success/error events from LWC
+            lwcComponent.addEventListener('accountcreated', (event) => {
+              showStatus('Success! Account created: ' + event.detail.name, 'success');
+              creationInProgress = false;
+              const btn = document.getElementById('createBtn');
+              btn.disabled = false;
+              btn.textContent = 'Create Person Account';
+            });
+            
+            lwcComponent.addEventListener('accounterror', (event) => {
+              showStatus('Error: ' + event.detail.error, 'error');
+              creationInProgress = false;
+              const btn = document.getElementById('createBtn');
+              btn.disabled = false;
+              btn.textContent = 'Create Person Account';
+            });
           }
         }, 1000);
         
       } catch (err) {
         console.error('Lightning Out init error:', err);
+        showStatus('Failed to initialize', 'error');
       }
     }
+
+    // Add button click handler
+    document.getElementById('createBtn').addEventListener('click', createAccount);
 
     if (customElements.get('lightning-out-application')) {
       init();
