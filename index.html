@@ -1,93 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"  style="height :100%; width: 100%;">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LWC Embed - Create Person Account</title>
+  <title>LWC Embed</title>
   <script src="https://lancashiredev--dev.sandbox.my.salesforce.com/lightning/lightning.out.latest/index.iife.prod.js"></script>
-  <style>
-    body{margin:0;padding:20px;font-family:Arial,sans-serif;background:#f4f6f9}
-    .page{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
-    .panel{background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.1);min-width:260px}
-    .flow{flex:1;min-width:320px}
-    button{background:#0070d2;color:#fff;border:0;border-radius:4px;padding:12px 24px;font-size:16px;cursor:pointer}
-    button:disabled{background:#999;cursor:not-allowed}
-    #status{margin-top:15px;padding:10px;border-radius:4px;display:none}
-    #status.success{display:block;background:#d4edda;color:#155724}
-    #status.error{display:block;background:#f8d7da;color:#721c24}
+  <style>  
+  body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; 
+  box-sizing: border-box; 
+  }
   </style>
 </head>
 <body>
-  <div class="flow">
-    <lightning-out-application id="loApp" app-id="1UsPu00000001iTKAQ" components="c-lwc-embed-flow"></lightning-out-application>
-    <c-lwc-embed-flow id="lwcComponent" style="width:100%"></c-lwc-embed-flow>
-  </div>
-  <div class="panel">
-    <button id="createBtn">Create Person Account</button>
-    <div id="status"></div>
-  </div>
+
+  <lightning-out-application
+    id="loApp"
+    app-id="1UsPu00000001iTKAQ"
+    components="c-lwc-embed-flow">
+  </lightning-out-application>
+
+  <c-lwc-embed-flow style="width: 101%;"></c-lwc-embed-flow>
+
   <script>
-    const status = document.getElementById('status');
-    const btn = document.getElementById('createBtn');
-    let busy = false;
-
-    function showStatus(message, type) {
-      status.textContent = message;
-      status.className = type || '';
-      status.style.display = 'block';
-    }
-
-    function resetButton() {
-      busy = false;
-      btn.disabled = false;
-      btn.textContent = 'Create Person Account';
-    }
-
-    function formatTimestamp() {
-      const d = new Date();
-      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
-    }
-
     async function init() {
       try {
+        const loApp = document.getElementById('loApp');
         const response = await fetch('/api/guest-session');
-        if (!response.ok) throw new Error(response.status);
-        const { frontdoorUrl } = await response.json();
-        document.getElementById('loApp').setAttribute('frontdoor-url', frontdoorUrl);
-        showStatus('Flow loaded. Click the button to create an account.', 'success');
+
+        if (!response.ok) {
+          throw new Error(`Session fetch failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+        loApp.setAttribute('frontdoor-url', data.frontdoorUrl);
       } catch (err) {
-        console.error(err);
-        showStatus('Failed to initialize flow.', 'error');
+        console.error('Lightning Out init error:', err);
       }
     }
 
-    btn.addEventListener('click', () => {
-      if (busy) {
-        showStatus('Creation already in progress...', 'error');
-        return;
-      }
-
-      const lwcComponent = document.getElementById('lwcComponent');
-      if (!lwcComponent) {
-        showStatus('Flow component not available yet.', 'error');
-        return;
-      }
-
-      busy = true;
-      btn.disabled = true;
-      btn.textContent = 'Creating...';
-      showStatus('Sending create request...', 'success');
-
-      lwcComponent.externalName = `John Doe ${formatTimestamp()}`;
-      setTimeout(resetButton, 1000);
-    });
-
-    const waitForLightning = setInterval(() => {
-      if (customElements.get('lightning-out-application')) {
-        clearInterval(waitForLightning);
-        init();
-      }
-    }, 100);
+    if (customElements.get('lightning-out-application')) {
+      init();
+    } else {
+      const check = setInterval(() => {
+        if (customElements.get('lightning-out-application')) {
+          clearInterval(check);
+          init();
+        }
+      }, 100);
+    }
   </script>
+
 </body>
 </html>
