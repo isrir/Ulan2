@@ -72,6 +72,7 @@
 </head>
 <body>
 
+  <!-- ✅ Input + Button on external page -->
   <div class="external-form">
     <label for="personName">Person Name:</label>
     <input type="text" id="personName" placeholder="Enter person name" />
@@ -87,107 +88,124 @@
 
   <c-lwc-embed-flow style="width:101%;"></c-lwc-embed-flow>
 
-  <script>
-    let createTimeoutId = null;
+ <script>
+  let createTimeoutId = null;
+let embedElement = null;
 
-    // Listen for results coming back from the LWC (sent via window.parent.postMessage)
-    window.addEventListener('message', function (event) {
-      if (!event.data || event.data.action !== 'CREATE_RECORD_RESULT') return;
+function getEmbedElement() {
+  return document.querySelector('c-lwc-embed-flow');
+}
 
-      if (createTimeoutId) {
-        clearTimeout(createTimeoutId);
-        createTimeoutId = null;
-      }
+function waitForEmbed(callback, attempts = 0) {
+  const el = getEmbedElement();
+  if (el && (typeof el.createRecord === 'function' || el.shadowRoot)) {
+    callback(el);
+  } else if (attempts < 100) {
+    setTimeout(() => waitForEmbed(callback, attempts + 1), 100);
+  } else {
+    console.error('Embedded component never became ready');
+  }
+}
 
-      const statusMsg = document.getElementById('statusMsg');
-      const btn = document.getElementById('createBtn');
+waitForEmbed(function (el) {
+  embedElement = el;
+  console.log('Embedded c-lwc-embed-flow ready:', el, '- createRecord is', typeof el.createRecord);
 
-      btn.disabled = false;
-      btn.textContent = 'Create Record';
-
-      if (event.data.success) {
-        statusMsg.style.color = 'green';
-        statusMsg.textContent = `✅ Record created successfully for: ${event.data.name}`;
-        document.getElementById('personName').value = '';
-      } else {
-        statusMsg.style.color = 'red';
-        statusMsg.textContent = '❌ Error: ' + event.data.error;
-      }
-    });
-
-    // Find the iframe Lightning Out creates for the embedded component
-    function getEmbedIframe() {
-      const host = document.querySelector('c-lwc-embed-flow');
-      return host ? host.querySelector('iframe') : document.querySelector('iframe');
+  el.addEventListener('createrecordresult', function (event) {
+    if (createTimeoutId) {
+      clearTimeout(createTimeoutId);
+      createTimeoutId = null;
     }
 
-    function handleCreateRecord() {
-      const name = document.getElementById('personName').value.trim();
-      const statusMsg = document.getElementById('statusMsg');
-      const btn = document.getElementById('createBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    const btn = document.getElementById('createBtn');
 
-      if (!name) {
-        statusMsg.style.color = 'red';
-        statusMsg.textContent = '⚠️ Please enter a name before creating a record.';
-        return;
-      }
+    btn.disabled = false;
+    btn.textContent = 'Create Record';
 
-      const iframe = getEmbedIframe();
-      if (!iframe || !iframe.contentWindow) {
-        statusMsg.style.color = 'red';
-        statusMsg.textContent = '❌ The embedded component is not ready yet. Please wait a moment and try again.';
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = 'Creating...';
-      statusMsg.style.color = '#444';
-      statusMsg.textContent = 'Creating record...';
-
-      // ✅ Post to the iframe's window, not our own
-      iframe.contentWindow.postMessage({ action: 'CREATE_RECORD', name: name }, '*');
-
-      // Safety net: if no response comes back, don't leave the UI stuck forever
-      createTimeoutId = setTimeout(() => {
-        btn.disabled = false;
-        btn.textContent = 'Create Record';
-        statusMsg.style.color = 'red';
-        statusMsg.textContent = '❌ Timed out waiting for a response from Salesforce.';
-      }, 15000);
-    }
-
-    document.getElementById('personName').addEventListener('keypress', function (e) {
-      if (e.key === 'Enter') handleCreateRecord();
-    });
-
-    async function init() {
-      try {
-        const loApp = document.getElementById('loApp');
-        const response = await fetch('/api/guest-session');
-
-        if (!response.ok) throw new Error(`Session fetch failed: ${response.status}`);
-
-        const data = await response.json();
-        loApp.setAttribute('frontdoor-url', data.frontdoorUrl);
-      } catch (err) {
-        console.error('Lightning Out init error:', err);
-        const statusMsg = document.getElementById('statusMsg');
-        statusMsg.style.color = 'red';
-        statusMsg.textContent = '❌ Failed to initialize Salesforce session.';
-      }
-    }
-
-    if (customElements.get('lightning-out-application')) {
-      init();
+    if (event.detail.success) {
+      statusMsg.style.color = 'green';
+      statusMsg.textContent = `✅ Record created successfully for: ${event.detail.name}`;
+      document.getElementById('personName').value = '';
     } else {
-      const check = setInterval(() => {
-        if (customElements.get('lightning-out-application')) {
-          clearInterval(check);
-          init();
-        }
-      }, 100);
+      statusMsg.style.color = 'red';
+      statusMsg.textContent = '❌ Error: ' + event.detail.error;
     }
-  </script>
+  });
+});
+
+function handleCreateRecord() {
+  const name = document.getElementById('personName').value.trim();
+  const statusMsg = document.getElementById('statusMsg');
+  const btn = document.getElementById('createBtn');
+
+  if (!name) {
+    statusMsg.style.color = 'red';
+    statusMsg.textContent = '⚠️ Please enter a name before creating a record.';
+    return;
+  }
+
+  if (!embedElement) {
+    statusMsg.style.color = 'red';
+    statusMsg.textContent = '❌ The embedded component is not ready yet. Please wait a moment and try again.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Creating...';
+  statusMsg.style.color = '#444';
+  statusMsg.textContent = 'Creating record...';
+
+  createTimeoutId = setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = 'Create Record';
+    statusMsg.style.color = 'red';
+    statusMsg.textContent = '❌ Timed out waiting for a response from Salesforce.';
+  }, 15000);
+
+  if (typeof embedElement.createRecord === 'function') {
+    embedElement.createRecord(name);
+  } else {
+    embedElement.dispatchEvent(new CustomEvent('createrecord', {
+      detail: { name: name },
+      bubbles: true,
+      composed: true
+    }));
+  }
+}
+
+document.getElementById('personName').addEventListener('keypress', function (e) {
+  if (e.key === 'Enter') handleCreateRecord();
+});
+
+async function init() {
+  try {
+    const loApp = document.getElementById('loApp');
+    const response = await fetch('/api/guest-session');
+
+    if (!response.ok) throw new Error(`Session fetch failed: ${response.status}`);
+
+    const data = await response.json();
+    loApp.setAttribute('frontdoor-url', data.frontdoorUrl);
+  } catch (err) {
+    console.error('Lightning Out init error:', err);
+    const statusMsg = document.getElementById('statusMsg');
+    statusMsg.style.color = 'red';
+    statusMsg.textContent = '❌ Failed to initialize Salesforce session.';
+  }
+}
+
+if (customElements.get('lightning-out-application')) {
+  init();
+} else {
+  const check = setInterval(() => {
+    if (customElements.get('lightning-out-application')) {
+      clearInterval(check);
+      init();
+    }
+  }, 100);
+}
+ </script>
 
 </body>
 </html>
