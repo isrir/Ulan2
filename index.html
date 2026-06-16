@@ -69,7 +69,7 @@
         const flowComp = document.getElementById('flowComp');
         flowComp.name = storename;
 
-        // 1. EXTRACT URL PARAMETERS VIA STANDARD BROWSER APIS
+        // EXTRACT URL PARAMETERS VIA STANDARD BROWSER APIS
         const urlParams = new URLSearchParams(window.location.search);
         const extractedState = {};
         
@@ -78,14 +78,14 @@
             extractedState[key] = value;
         }
 
-        // 2. INJECT EXTRACTED DATA DIRECTLY INTO LWC PROPERTIES
+        // INJECT EXTRACTED DATA DIRECTLY INTO LWC PROPERTIES
         const sessionStorageComp = document.getElementById('sessionStorage');
         if (sessionStorageComp) {
             // Mapping public property using JavaScript object assignment
             sessionStorageComp.injectedParams = extractedState;
         }
 
-        // 3. INITIALIZE SECURE LIGHTNING OUT CONTAINER
+        //  INITIALIZE SECURE LIGHTNING OUT CONTAINER
         const loApp = document.getElementById('loApp');
         const response = await fetch('/api/guest-session');
 
