@@ -54,6 +54,7 @@
   .panel {
     height: calc(100vh - 60px);
     overflow: hidden;
+    padding: 1rem;
   }
 
   .hidden {
@@ -65,6 +66,55 @@
     display: block;
     width: 100%;
     height: 100%;
+  }
+
+  .session-panel {
+    display: grid;
+    gap: 1rem;
+    height: 100%;
+    background: #ffffff;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+    overflow: auto;
+  }
+
+  .session-row {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: 140px 1fr;
+    align-items: start;
+  }
+
+  .session-label {
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .session-actions {
+    margin-top: auto;
+  }
+
+  .session-actions button {
+    background: #1f2937;
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+  }
+
+  .session-actions button:hover {
+    background: #111827;
+  }
+
+  pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: #f3f4f6;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
   }
   </style>
 </head>
@@ -80,7 +130,20 @@
     </div>
 
     <div class="panel hidden" id="sessionPanel">
-      <c-session-storage id="sessionStorageComp"></c-session-storage>
+      <div class="session-panel">
+        <h2>Session Storage</h2>
+        <div class="session-row">
+          <span class="session-label">frontdoorUrl</span>
+          <pre id="sessionFrontdoorUrl">(empty)</pre>
+        </div>
+        <div class="session-row">
+          <span class="session-label">guestName</span>
+          <span id="sessionGuestName">(empty)</span>
+        </div>
+        <div class="session-actions">
+          <button id="clearSessionButton" type="button">Clear session storage</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -89,7 +152,7 @@
     const loApp = document.createElement('lightning-out-application');
     loApp.id = 'loApp';
     loApp.setAttribute('app-id', '1UsPu00000001iTKAQ');
-    loApp.setAttribute('components', 'c-lwc-embed-flow,c-session-storage');
+    loApp.setAttribute('components', 'c-lwc-embed-flow');
     document.body.insertBefore(loApp, document.body.firstChild);
 
     function activateTab(targetId) {
@@ -129,13 +192,7 @@
         try {
           sessionStorage.setItem('frontdoorUrl', data.frontdoorUrl);
           sessionStorage.setItem('guestName', storename);
-          const storageComp = document.getElementById('sessionStorageComp');
-          if (storageComp) {
-            storageComp.dispatchEvent(new CustomEvent('sessionstored', {
-              detail: { frontdoorUrl: data.frontdoorUrl, guestName: storename },
-              bubbles: true
-            }));
-          }
+          updateSessionPanel(data.frontdoorUrl, storename);
         } catch (sessionError) {
           console.warn('sessionStorage unavailable:', sessionError && sessionError.message ? sessionError.message : sessionError);
         }
@@ -154,6 +211,25 @@
         }
       }, 100);
     }
+
+    function updateSessionPanel(frontdoorUrl, guestName) {
+      const urlEl = document.getElementById('sessionFrontdoorUrl');
+      const nameEl = document.getElementById('sessionGuestName');
+      if (urlEl) {
+        urlEl.textContent = frontdoorUrl || '(empty)';
+      }
+      if (nameEl) {
+        nameEl.textContent = guestName || '(empty)';
+      }
+    }
+
+    document.getElementById('clearSessionButton')?.addEventListener('click', () => {
+      sessionStorage.removeItem('frontdoorUrl');
+      sessionStorage.removeItem('guestName');
+      updateSessionPanel(null, null);
+    });
+
+    updateSessionPanel(sessionStorage.getItem('frontdoorUrl'), sessionStorage.getItem('guestName'));
   </script>
 </body>
 </html>
