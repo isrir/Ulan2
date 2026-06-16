@@ -243,35 +243,25 @@
     .form-body {
       background: #f2f4f6;
       padding: 0;
-      overflow: visible;
+      margin: 0;
+      width: 100%;
+      overflow: hidden;
     }
 
-    .form-layout {
+    .embedded-flow,
+    lightning-out-application {
       display: block;
-      max-width: 100%;
       width: 100%;
+      max-width: 100%;
+      min-width: 0;
       margin: 0;
       padding: 0;
+      border: 0;
     }
 
-    .form-main {
-      min-width: 0;
+    .embedded-flow {
+      overflow: hidden;
     }
-
-    .form-card {
-      max-width: none;
-      margin: 0;
-      background: transparent;
-      border-radius: 0;
-      box-shadow: none;
-      overflow: visible;
-    }
-
-    .form-card::before {
-      display: none;
-    }
-
-    .form-card-inner { padding: 0; }
 
     /* ── Loading / error / success ── */
     #loadingMsg {
@@ -416,77 +406,13 @@
        PROSPECT REQUEST FORM PAGE
   ══════════════════════════════ -->
   <div class="page" id="page-enquiry">
-    <div class="form-outer">
+   <lightning-out-application
+    id="loApp"
+    app-id="1UsPu00000001iTKAQ"
+    components="c-lwc-embed-flow">
+  </lightning-out-application>
 
-      <!-- ── Banner (mirrors hero style) ── -->
-      <div class="form-banner">
-        <div class="form-banner-circle c1"></div>
-        <div class="form-banner-circle c2"></div>
-
-        <div class="form-banner-inner">
-          <!-- Red accent tag -->
-          <div class="form-banner-tag">
-            <div class="tag-label">Future Students</div>
-            <div class="tag-divider"></div>
-            <h1>Prospect Request Form</h1>
-            <p>Tell us about yourself and we'll send you everything you need to take the next step.</p>
-          </div>
-
-          <!-- Progress steps -->
-          <div class="form-banner-steps">
-            <div class="step-pill active">
-              <div class="step-num">1</div> Your Details
-            </div>
-            <div class="step-pill">
-              <div class="step-num">2</div> Course Interest
-            </div>
-            <div class="step-pill">
-              <div class="step-num">3</div> Confirmation
-            </div>
-          </div>
-        </div>
-      </div><!-- /form-banner -->
-
-      <!-- ── Main form body ── -->
-      <div class="form-body">
-        <div class="form-layout">
-
-          <!-- Form card (main) -->
-          <div class="form-main">
-            <div class="form-card">
-              <div class="form-card-inner">
-
-                <div id="loadingMsg">
-                  <div class="spinner-sm"></div>
-                  <span>Loading form…</span>
-                </div>
-
-                <div id="errorMsg"></div>
-
-                <div id="successMsg">
-                  <strong>Thank you for your enquiry!</strong>
-                  A member of our team will be in touch with you shortly.
-                </div>
-
-                <!-- Lightning Out 2.0 shell (hidden — registers the app) -->
-                <lightning-out-application
-                  id="loApp"
-                  app-id="1UsPu00000001iTKAQ"
-                  components="c-lwc-embed-flow"
-                  style="display:none;">
-                </lightning-out-application>
-
-                <!-- LWC renders here -->
-                <c-lwc-embed-flow></c-lwc-embed-flow>
-
-              </div>
-            </div>
-          </div><!-- /form-main -->
-
-        </div>
-      </div><!-- /form-body -->
-
-    </div><!-- /form-outer -->
+  <c-lwc-embed-flow style="width: 101%;"></c-lwc-embed-flow>
   </div><!-- /page-enquiry -->
 
   <script>
