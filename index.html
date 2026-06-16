@@ -120,116 +120,12 @@
 </head>
 <body>
   <div class="app-shell">
-    <div class="tabs" role="tablist">
-      <button class="tab active" data-target="flowPanel" type="button">Flow</button>
-      <button class="tab" data-target="sessionPanel" type="button">Session Storage</button>
-    </div>
-
-    <div class="panel" id="flowPanel">
-      <c-lwc-embed-flow id="flowComp"></c-lwc-embed-flow>
-    </div>
-
-    <div class="panel hidden" id="sessionPanel">
-      <div class="session-panel">
-        <h2>Session Storage</h2>
-        <div class="session-row">
-          <span class="session-label">frontdoorUrl</span>
-          <pre id="sessionFrontdoorUrl">(empty)</pre>
-        </div>
-        <div class="session-row">
-          <span class="session-label">guestName</span>
-          <span id="sessionGuestName">(empty)</span>
-        </div>
-        <div class="session-actions">
-          <button id="clearSessionButton" type="button">Clear session storage</button>
-        </div>
-      </div>
-    </div>
+    <lightning-out-application id="loApp" app-id="1UsPu00000001iTKAQ" components="c-lwc-embed-flow,c-session-storage"></lightning-out-application>
+    <c-session-storage></c-session-storage>
   </div>
 
   <script>
-    const storename = 'sairam';
-    const loApp = document.createElement('lightning-out-application');
-    loApp.id = 'loApp';
-    loApp.setAttribute('app-id', '1UsPu00000001iTKAQ');
-    loApp.setAttribute('components', 'c-lwc-embed-flow');
-    document.body.insertBefore(loApp, document.body.firstChild);
-
-    function activateTab(targetId) {
-      document.querySelectorAll('.panel').forEach(panel => {
-        panel.classList.toggle('hidden', panel.id !== targetId);
-      });
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.toggle('active', tab.dataset.target === targetId);
-      });
-    }
-
-    document.addEventListener('click', event => {
-      const tab = event.target.closest('.tab');
-      if (!tab) return;
-      activateTab(tab.dataset.target);
-    });
-
-    async function init() {
-      try {
-        const flowComp = document.getElementById('flowComp');
-        if (flowComp) {
-          flowComp.name = storename;
-        }
-
-        const loApp = document.getElementById('loApp');
-        const response = await fetch('/api/guest-session');
-
-        if (!response.ok) {
-          throw new Error(`Session fetch failed: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (loApp) {
-          loApp.setAttribute('frontdoor-url', data.frontdoorUrl);
-        }
-
-        try {
-          sessionStorage.setItem('frontdoorUrl', data.frontdoorUrl);
-          sessionStorage.setItem('guestName', storename);
-          updateSessionPanel(data.frontdoorUrl, storename);
-        } catch (sessionError) {
-          console.warn('sessionStorage unavailable:', sessionError && sessionError.message ? sessionError.message : sessionError);
-        }
-      } catch (err) {
-        console.error('Lightning Out init error:', err);
-      }
-    }
-
-    if (customElements.get('lightning-out-application')) {
-      init();
-    } else {
-      const check = setInterval(() => {
-        if (customElements.get('lightning-out-application')) {
-          clearInterval(check);
-          init();
-        }
-      }, 100);
-    }
-
-    function updateSessionPanel(frontdoorUrl, guestName) {
-      const urlEl = document.getElementById('sessionFrontdoorUrl');
-      const nameEl = document.getElementById('sessionGuestName');
-      if (urlEl) {
-        urlEl.textContent = frontdoorUrl || '(empty)';
-      }
-      if (nameEl) {
-        nameEl.textContent = guestName || '(empty)';
-      }
-    }
-
-    document.getElementById('clearSessionButton')?.addEventListener('click', () => {
-      sessionStorage.removeItem('frontdoorUrl');
-      sessionStorage.removeItem('guestName');
-      updateSessionPanel(null, null);
-    });
-
-    updateSessionPanel(sessionStorage.getItem('frontdoorUrl'), sessionStorage.getItem('guestName'));
+    // No-op script: using static <lightning-out-application> and <c-session-storage> only.
   </script>
 </body>
 </html>
