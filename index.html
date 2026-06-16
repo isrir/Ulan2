@@ -1,27 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" style="height:100%;width:100%;">
+<html lang="en"  style="height :100%; width: 100%;">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>University of lancashiredev</title>
-  <link rel="icon" href="data:,">
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LWC Embed</title>
   <script src="https://lancashiredev--dev.sandbox.my.salesforce.com/lightning/lightning.out.latest/index.iife.prod.js"></script>
-
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html {
-      height: 100%; width: 100%;
-      font-family: 'Source Sans 3', sans-serif;
-      background: #fff; color: #222;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      box-sizing: border-box;
-    }
-
-    body {
+  <style>  
+  body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -29,465 +14,46 @@
   overflow: hidden; 
   box-sizing: border-box; 
   }
-
-    :root {
-      --red:       #c8102e;
-      --navy:      #1e3a52;
-      --navy-dark: #16304a;
-      --white:     #ffffff;
-    }
-
-    /* ════════════════════════════
-       TOP BAR
-    ════════════════════════════ */
-    .top-bar {
-      background: var(--navy);
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 40px;
-    }
-    .logo {
-      display: flex; align-items: center; gap: 12px;
-      text-decoration: none; color: var(--white); cursor: pointer;
-    }
-    .logo-emblem {
-      width: 52px; height: 52px; background: #fff; border-radius: 3px;
-      display: flex; align-items: center; justify-content: center; padding: 4px;
-    }
-    .logo-shield {
-      width: 38px; height: 44px; background: var(--navy);
-      clip-path: polygon(0 0,100% 0,100% 70%,50% 100%,0 70%);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-    }
-    .logo-year { font-size: 7px; color:#fff; font-weight:700; letter-spacing:.5px; margin-top:4px; }
-    .logo-rose { font-size:14px; color:var(--red); margin-top:2px; }
-    .logo-text { font-family:'Source Serif 4',serif; font-size:18px; font-weight:600; line-height:1.2; }
-    .top-links { display:flex; gap:20px; align-items:center; }
-    .top-links a { color:#fff; text-decoration:none; font-size:14px; opacity:.85; transition:opacity .2s; }
-    .top-links a:hover { opacity:1; }
-    .top-links span { color:rgba(255,255,255,.4); }
-
-    /* ════════════════════════════
-       NAV
-    ════════════════════════════ */
-    nav {
-      background: var(--navy-dark);
-      display: flex; align-items: center;
-      padding: 0 40px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-    }
-    .nav-item {
-      display: flex; align-items: center; gap: 5px;
-      padding: 14px 18px;
-      color: #fff; font-size: 15px; font-weight: 500;
-      cursor: pointer; white-space: nowrap;
-      border: none; background: transparent;
-      transition: background .2s;
-    }
-    .nav-item:hover  { background: rgba(255,255,255,.08); }
-    .nav-item.active { background: var(--red); }
-    .nav-icons { margin-left: auto; display:flex; gap:4px; }
-    .nav-icon {
-      width:40px; height:40px;
-      display:flex; align-items:center; justify-content:center;
-      color:#fff; font-size:18px; cursor:pointer;
-      border-radius:4px; transition:background .2s;
-    }
-    .nav-icon:hover { background:rgba(255,255,255,.1); }
-
-    /* ════════════════════════════
-       PAGE SWITCHING
-    ════════════════════════════ */
-    .page         { display:none; }
-    .page.active  { display:block; }
-
-    /* ════════════════════════════
-       HOME — HERO
-    ════════════════════════════ */
-    .hero {
-      position: relative; min-height: 520px;
-      background: linear-gradient(135deg,#1e3a52 0%,#2c5071 40%,#3a6b8a 70%,#4a7fa0 100%);
-      display: flex; align-items: center; overflow: hidden;
-    }
-    .hero-bg { position:absolute; inset:0; overflow:hidden; }
-    .hero-bg::before {
-      content:''; position:absolute; right:0; top:0; width:65%; height:100%;
-      background:linear-gradient(160deg,#3a6b8a 0%,#2c5571 30%,#1a4060 60%,#152f47 100%);
-      clip-path:polygon(8% 0,100% 0,100% 100%,0 100%);
-    }
-    .hero-foliage {
-      position:absolute; left:0; top:0; width:280px; height:100%;
-      background:linear-gradient(to right,rgba(180,160,80,.18) 0%,transparent 100%);
-      pointer-events:none;
-    }
-    .hero-circle { position:absolute; border-radius:50%; background:rgba(255,255,255,.04); }
-    .hero-circle.c1 { width:300px; height:300px; right:100px; top:-80px; }
-    .hero-circle.c2 { width:180px; height:180px; right:300px; bottom:20px; }
-    .hero-content { position:relative; z-index:2; padding:40px 40px 60px; }
-    .hero-card {
-      background:var(--red); padding:36px 40px 40px;
-      max-width:460px; color:#fff;
-      box-shadow:0 20px 60px rgba(0,0,0,.35);
-    }
-    .hero-label  { font-size:13px; font-weight:500; opacity:.9; letter-spacing:.3px; margin-bottom:10px; }
-    .hero-divider{ width:60px; height:2px; background:rgba(255,255,255,.5); margin-bottom:18px; }
-    .hero-title  { font-family:'Source Serif 4',serif; font-size:38px; font-weight:700; line-height:1.15; margin-bottom:18px; }
-    .hero-desc   { font-size:15px; line-height:1.6; opacity:.92; margin-bottom:28px; }
-    .hero-btn {
-      display:inline-flex; align-items:center; gap:10px;
-      background:#fff; color:var(--navy);
-      padding:12px 24px; border-radius:40px;
-      font-weight:600; font-size:14px;
-      cursor:pointer; border:2px solid transparent;
-      transition:all .25s;
-    }
-    .hero-btn:hover { background:transparent; color:#fff; border-color:#fff; }
-
-    /* ════════════════════════════
-       HOME — CARDS STRIP
-    ════════════════════════════ */
-    .bottom-section {
-      background:var(--navy); padding:0 40px 60px;
-      display:flex; justify-content:center;
-    }
-    .cards-row {
-      display:flex; gap:24px; margin-top:-32px;
-      max-width:700px; width:100%; justify-content:center;
-    }
-    .card {
-      flex:1; max-width:210px; cursor:pointer; text-align:center;
-      color:#fff; text-decoration:none; transition:transform .25s;
-    }
-    .card:hover { transform:translateY(-4px); }
-    .card-thumb {
-      width:100%; aspect-ratio:4/3; border-radius:4px;
-      overflow:hidden; margin-bottom:14px; position:relative;
-    }
-    .card-thumb.ug   { background:linear-gradient(135deg,#3a6040 0%,#2a5030 50%,#1e3a24 100%); }
-    .card-thumb.pg   { background:linear-gradient(135deg,#5a4030 0%,#3a2820 50%,#2a1810 100%); }
-    .card-thumb::after { content:''; position:absolute; inset:0; background:rgba(0,0,0,.15); }
-    .card-label { font-size:15px; font-weight:600; color:rgba(255,255,255,.85); letter-spacing:.2px; }
-
-    /* ════════════════════════════
-       FORM PAGE — OUTER SHELL
-       keeps the same navy hero-strip
-       look as the home page
-    ════════════════════════════ */
-    .form-outer {
-      background: var(--navy);
-      min-height: calc(100vh - 106px);  /* fill below header+nav */
-    }
-
-    /* ── Banner strip at top of form page ── */
-    .form-banner {
-      position: relative;
-      background: linear-gradient(135deg,#1e3a52 0%,#2c5071 40%,#3a6b8a 70%,#4a7fa0 100%);
-      padding: 40px 40px 0;
-      overflow: hidden;
-    }
-    .form-banner::before {
-      content:''; position:absolute; right:0; top:0; width:55%; height:100%;
-      background:linear-gradient(160deg,#3a6b8a 0%,#2c5571 30%,#1a4060 60%,#152f47 100%);
-      clip-path:polygon(12% 0,100% 0,100% 100%,0 100%);
-    }
-    .form-banner-circle { position:absolute; border-radius:50%; background:rgba(255,255,255,.04); }
-    .form-banner-circle.c1 { width:240px; height:240px; right:80px; top:-60px; }
-    .form-banner-circle.c2 { width:130px; height:130px; right:260px; bottom:-20px; }
-
-    .form-banner-inner {
-      position: relative; z-index: 2;
-      display: flex; align-items: flex-end; gap: 0;
-      max-width: 960px; margin: 0 auto;
-    }
-
-    /* Red tag on the left — mirrors the hero-card accent */
-    .form-banner-tag {
-      background: var(--red);
-      color: #fff;
-      padding: 22px 32px 28px;
-      min-width: 280px;
-      box-shadow: 0 12px 40px rgba(0,0,0,.3);
-    }
-    .form-banner-tag .tag-label {
-      font-size:12px; font-weight:600; letter-spacing:1px;
-      text-transform:uppercase; opacity:.85; margin-bottom:8px;
-    }
-    .form-banner-tag .tag-divider {
-      width:40px; height:2px; background:rgba(255,255,255,.45); margin-bottom:12px;
-    }
-    .form-banner-tag h1 {
-      font-family:'Source Serif 4',serif;
-      font-size:26px; font-weight:700; line-height:1.2;
-    }
-    .form-banner-tag p {
-      font-size:13px; line-height:1.5; opacity:.88; margin-top:8px;
-    }
-
-    /* Steps indicator on the right side of banner */
-    .form-banner-steps {
-      display: flex; gap: 0; margin-left: 40px; padding-bottom: 0;
-    }
-    .step-pill {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 18px;
-      color: rgba(255,255,255,.55);
-      font-size: 13px; font-weight: 500;
-      border-bottom: 3px solid transparent;
-      transition: all .2s;
-    }
-    .step-pill.done  { color: rgba(255,255,255,.8); }
-    .step-pill.active{
-      color: #fff;
-      border-bottom-color: var(--red);
-    }
-    .step-num {
-      width:24px; height:24px; border-radius:50%;
-      display:flex; align-items:center; justify-content:center;
-      font-size:11px; font-weight:700;
-      background: rgba(255,255,255,.15);
-    }
-    .step-pill.done   .step-num { background:rgba(255,255,255,.25); }
-    .step-pill.active .step-num { background:var(--red); }
-
-    /* ── Form content area ── */
-    .form-body {
-      background: #f2f4f6;
-      padding: 0;
-      margin: 0;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .embedded-flow,
-    lightning-out-application {
-      display: block;
-      width: 100%;
-      max-width: 100%;
-      min-width: 0;
-      margin: 0;
-      padding: 0;
-      border: 0;
-    }
-
-    .embedded-flow {
-      overflow: hidden;
-    }
-
-    /* ── Loading / error / success ── */
-    #loadingMsg {
-      display:flex; align-items:center; gap:12px;
-      font-size:14px; color:#6e6e6e; padding:32px 0;
-    }
-    .spinner-sm {
-      width:22px; height:22px; flex-shrink:0;
-      border:2px solid #e0e0e0; border-top-color:var(--red);
-      border-radius:50%; animation:spin .8s linear infinite;
-    }
-    @keyframes spin { to { transform:rotate(360deg); } }
-
-    #errorMsg {
-      display:none;
-      background:#fef0f0; border:1px solid #f6acac;
-      border-radius:6px; padding:14px 18px;
-      font-size:14px; color:#ba0517; margin-bottom:16px;
-    }
-    #successMsg {
-      display:none;
-      background:#eaf6ea; border:1px solid #91db8b;
-      border-radius:8px; padding:32px 24px;
-      text-align:center; color:#2e7d32;
-    }
-    #successMsg strong { display:block; font-size:18px; margin-bottom:8px; }
-
-    /* LWC host fills available width */
-    lightning-out-application,
-    c-lwc-embed-flow,
-    .form-card-inner {
-      display:block;
-      width:100%;
-      max-width:100%;
-      min-width:0;
-    }
-
-    c-lwc-embed-flow {
-      overflow: visible;
-    }
-
-    /* ════════════════════════════
-       RESPONSIVE
-    ════════════════════════════ */
-    @media (max-width: 900px) {
-      .form-layout   { flex-direction:column; }
-      .form-aside    { width:100%; flex-direction:row; flex-wrap:wrap; }
-      .aside-card    { flex:1; min-width:200px; }
-      .form-banner-steps { display:none; }
-      .form-banner-tag   { min-width:unset; width:100%; }
-    }
-    @media (max-width: 768px) {
-      .top-bar, nav      { padding:10px 20px; }
-      .hero-content      { padding:30px 20px 50px; }
-      .hero-card         { max-width:100%; }
-      .hero-title        { font-size:28px; }
-      .bottom-section    { padding:0 20px 40px; }
-      .cards-row         { gap:14px; }
-      .form-banner       { padding:28px 20px 0; }
-      .form-body         { padding:24px 20px 40px; }
-      .form-card-inner   { padding:24px 20px; }
-    }
   </style>
 </head>
 <body>
 
-  <!-- ══════════════════════════════
-       TOP BAR
-  ══════════════════════════════ -->
-  <div class="top-bar">
-    <a class="logo" onclick="showPage('home')">
-      <div class="logo-emblem">
-        <div class="logo-shield">
-          <div class="logo-year">1828</div>
-          <div class="logo-rose">✿</div>
-        </div>
-      </div>
-      <div class="logo-text">University of<br>lancashiredev</div>
-    </a>
-    <div class="top-links">
-      <a href="#">Students</a>
-      <span>|</span>
-      <a href="#">Staff</a>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════
-       NAV
-  ══════════════════════════════ -->
-  <nav>
-    <button class="nav-item active" id="nav-home" onclick="showPage('home')">
-      🏠 Home
-    </button>
-    <button class="nav-item" id="nav-enquiry" onclick="showPage('enquiry')">
-      📋 Prospect Request Form
-    </button>
-    <div class="nav-icons">
-      <div class="nav-icon">♡</div>
-      <div class="nav-icon">⌕</div>
-    </div>
-  </nav>
-
-  <!-- ══════════════════════════════
-       HOME PAGE
-  ══════════════════════════════ -->
-  <div class="page active" id="page-home">
-    <div class="hero">
-      <div class="hero-bg"></div>
-      <div class="hero-foliage"></div>
-      <div class="hero-circle c1"></div>
-      <div class="hero-circle c2"></div>
-      <div class="hero-content">
-        <div class="hero-card">
-          <div class="hero-label">Preston Open Day</div>
-          <div class="hero-divider"></div>
-          <div class="hero-title">Preston Open Day</div>
-          <div class="hero-desc">
-            Experience university life for yourself. Visit us at our Preston Campus Open Day on Saturday 20 June.
-          </div>
-          <button class="hero-btn" onclick="showPage('enquiry')">
-            Book your Open Day &nbsp;→
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="bottom-section">
-      <div class="cards-row">
-        <a href="#" class="card" onclick="showPage('enquiry'); return false;">
-          <div class="card-thumb ug"></div>
-          <div class="card-label">Undergraduate</div>
-        </a>
-        <a href="#" class="card" onclick="showPage('enquiry'); return false;">
-          <div class="card-thumb pg"></div>
-          <div class="card-label">Postgraduate</div>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════
-       PROSPECT REQUEST FORM PAGE
-  ══════════════════════════════ -->
-  <div class="page" id="page-enquiry">
-   <lightning-out-application
+  <lightning-out-application
     id="loApp"
     app-id="1UsPu00000001iTKAQ"
     components="c-lwc-embed-flow">
   </lightning-out-application>
 
   <c-lwc-embed-flow style="width: 101%;"></c-lwc-embed-flow>
-  </div><!-- /page-enquiry -->
 
   <script>
-    /* ── PAGE SWITCHING ── */
-    let enquiryInitialized = false;
-
-    function showPage(name) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById('page-' + name).classList.add('active');
-
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-      const navEl = document.getElementById('nav-' + name);
-      if (navEl) navEl.classList.add('active');
-
-      if (name === 'enquiry' && !enquiryInitialized) {
-        enquiryInitialized = true;
-        initLightningOut2();
-      }
-    }
-
-    /* ── LIGHTNING OUT 2.0 INIT ── */
-    async function initLightningOut2() {
+    async function init() {
       try {
-        const response = await fetch('/api/guest-session');
-        if (!response.ok) throw new Error(`Session fetch failed: ${response.status}`);
-
-        const data  = await response.json();
         const loApp = document.getElementById('loApp');
+        const response = await fetch('/api/guest-session');
+
+        if (!response.ok) {
+          throw new Error(`Session fetch failed: ${response.status}`);
+        }
+
+        const data = await response.json();
         loApp.setAttribute('frontdoor-url', data.frontdoorUrl);
-
-        loApp.addEventListener('ready', () => {
-          document.getElementById('loadingMsg').style.display = 'none';
-        });
-
-        // Fallback: hide spinner after 12 s
-        setTimeout(() => {
-          document.getElementById('loadingMsg').style.display = 'none';
-        }, 12000);
-
       } catch (err) {
-        console.error('Lightning Out 2.0 init error:', err);
-        showFormError('Could not load the form. Please refresh and try again.');
+        console.error('Lightning Out init error:', err);
       }
     }
 
-    function showFormError(msg) {
-      const el = document.getElementById('errorMsg');
-      el.textContent = msg;
-      el.style.display = 'block';
-      document.getElementById('loadingMsg').style.display = 'none';
-    }
-
-    /* ── WAIT FOR LO2 CUSTOM ELEMENT ── */
-    function waitForLO2(cb) {
-      if (customElements.get('lightning-out-application')) { cb(); return; }
-      const t = setInterval(() => {
-        if (customElements.get('lightning-out-application')) { clearInterval(t); cb(); }
+    if (customElements.get('lightning-out-application')) {
+      init();
+    } else {
+      const check = setInterval(() => {
+        if (customElements.get('lightning-out-application')) {
+          clearInterval(check);
+          init();
+        }
       }, 100);
     }
-
-    waitForLO2(() => {
-      if (document.getElementById('page-enquiry').classList.contains('active')) {
-        enquiryInitialized = true;
-        initLightningOut2();
-      }
-    });
   </script>
+
 </body>
 </html>
