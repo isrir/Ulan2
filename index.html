@@ -4,35 +4,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LWC Embed</title>
-  <script src="https://lancashiredev--dev.sandbox.my.salesforce.com/lightning/lightning.out.latest/index.iife.prod.js"></script>
+  <script type="text/javascript" async src="https://lancashiredev--dev.sandbox.my.salesforce.com/lightning/lightning.out.latest/index.iife.prod.js"></script>
   <style>
   body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
   }
   </style>
 </head>
 <body>
 
-  <lightning-out-application
-    id="loApp"
-    app-id="1UsPu00000001iTKAQ"
-    components="c-lwc-embed-flow">
-  </lightning-out-application>
-
   <c-lwc-embed-flow id="flowComp" style="width: 101%;"></c-lwc-embed-flow>
+  <c-session-storage id="sessionStorageComp"></c-session-storage>
 
   <script>
-    var storename = 'sairam';
+    const storename = 'sairam';
+    const loApp = document.createElement('lightning-out-application');
+    loApp.id = 'loApp';
+    loApp.setAttribute('app-id', '1UsPu00000001iTKAQ');
+    loApp.setAttribute('components', 'c-lwc-embed-flow,c-session-storage');
+    document.body.insertBefore(loApp, document.body.firstChild);
+
 
     async function init() {
       try {
         const flowComp = document.getElementById('flowComp');
-        flowComp.name = storename;
+        if (flowComp) {
+          flowComp.name = storename;
+        }
 
         const loApp = document.getElementById('loApp');
         const response = await fetch('/api/guest-session');
@@ -42,7 +45,23 @@
         }
 
         const data = await response.json();
-        loApp.setAttribute('frontdoor-url', data.frontdoorUrl);
+        if (loApp) {
+          loApp.setAttribute('frontdoor-url', data.frontdoorUrl);
+        }
+
+        try {
+          sessionStorage.setItem('frontdoorUrl', data.frontdoorUrl);
+          sessionStorage.setItem('guestName', storename);
+          const storageComp = document.getElementById('sessionStorageComp');
+          if (storageComp) {
+            storageComp.dispatchEvent(new CustomEvent('sessionstored', {
+              detail: { frontdoorUrl: data.frontdoorUrl, guestName: storename },
+              bubbles: true
+            }));
+          }
+        } catch (sessionError) {
+          console.warn('sessionStorage unavailable:', sessionError && sessionError.message ? sessionError.message : sessionError);
+        }
       } catch (err) {
         console.error('Lightning Out init error:', err);
       }
