@@ -14,20 +14,52 @@
   overflow: hidden;
   box-sizing: border-box;
   }
+  .tabs { display: flex; background: #f5f5f5; border-bottom: 1px solid #ddd; }
+  .tab { padding: 10px 16px; cursor: pointer; border: none; background: none; font: inherit; }
+  .tab.active { background: #fff; border-top: 3px solid #0070d2; }
+  .tab:focus { outline: none; }
+  .tab-panel { display: none; height: calc(100% - 44px); }
+  .tab-panel.active { display: block; }
+  .container { height: 100%; width: 100%; box-sizing: border-box; }
   </style>
 </head>
 <body>
+  <div class="container">
+    <div class="tabs" role="tablist">
+      <button class="tab active" role="tab" aria-selected="true" data-target="tab-flow">Flow</button>
+      <button class="tab" role="tab" aria-selected="false" data-target="tab-session">Session Storage</button>
+    </div>
 
-  <lightning-out-application
-    id="loApp"
-    app-id="1UsPu00000001iTKAQ"
-    components="c-lwc-embed-flow">
-  </lightning-out-application>
+    <lightning-out-application
+      id="loApp"
+      app-id="1UsPu00000001iTKAQ"
+      components="c-lwc-embed-flow,c-sessionstorage">
+    </lightning-out-application>
 
-  <c-lwc-embed-flow id="flowComp" style="width: 101%;"></c-lwc-embed-flow>
+    <div id="tab-flow" class="tab-panel active">
+      <c-lwc-embed-flow id="flowComp" style="width: 101%; height:100%;"></c-lwc-embed-flow>
+    </div>
 
+    <div id="tab-session" class="tab-panel">
+      <c-sessionstorage id="sessionStorage"></c-sessionstorage>
+    </div>
+  </div>
   <script>
     var storename = 'sairam';
+
+    // Tab switching
+    function initTabs() {
+      document.querySelectorAll('.tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.getAttribute('data-target');
+          document.querySelectorAll('.tab').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+          btn.classList.add('active'); btn.setAttribute('aria-selected','true');
+          document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+          const panel = document.getElementById(target);
+          if (panel) panel.classList.add('active');
+        });
+      });
+    }
 
     async function init() {
       try {
@@ -49,11 +81,13 @@
     }
 
     if (customElements.get('lightning-out-application')) {
+      initTabs();
       init();
     } else {
       const check = setInterval(() => {
         if (customElements.get('lightning-out-application')) {
           clearInterval(check);
+          initTabs();
           init();
         }
       }, 100);
