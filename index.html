@@ -27,12 +27,12 @@
   <c-lwc-embed-flow id="flowComp" style="width: 101%;"></c-lwc-embed-flow>
 
   <script>
-    var siteUserName = 'sairam';
+    var storename = 'sairam';
 
     async function init() {
       try {
         const flowComp = document.getElementById('flowComp');
-        flowComp.name = siteUserName;
+        flowComp.name = storename;
 
         const loApp = document.getElementById('loApp');
         const response = await fetch('/api/guest-session');
