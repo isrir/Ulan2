@@ -15,7 +15,10 @@
       height: 100%; width: 100%;
       font-family: 'Source Sans 3', sans-serif;
       background: #fff; color: #222;
-      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      box-sizing: border-box;
     }
 
     :root {
@@ -297,7 +300,18 @@
     #successMsg strong { display:block; font-size:18px; margin-bottom:8px; }
 
     /* LWC host fills available width */
-    c-lwc-embed-flow { display:block; width:100%; }
+    lightning-out-application,
+    c-lwc-embed-flow,
+    .form-card-inner {
+      display:block;
+      width:100%;
+      max-width:100%;
+      min-width:0;
+    }
+
+    c-lwc-embed-flow {
+      overflow: visible;
+    }
 
     /* ════════════════════════════
        RESPONSIVE
@@ -463,7 +477,7 @@
                 </lightning-out-application>
 
                 <!-- LWC renders here -->
-                  <c-lwc-embed-flow style="width: 101%;"></c-lwc-embed-flow>
+                <c-lwc-embed-flow></c-lwc-embed-flow>
 
               </div>
             </div>
