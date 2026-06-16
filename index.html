@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LWC Embed</title>
-  <script type="text/javascript" async="" src="https://lancashiredev--dev.sandbox.my.salesforce.com/lightning/lightning.out.latest/index.iife.prod.js"></script>
+  <script src="https://lancashiredev--dev.sandbox.my.salesforce.com/lightning/lightning.out.latest/index.iife.prod.js"></script>
   <style>
   body {
   margin: 0;
@@ -21,12 +21,10 @@
   <lightning-out-application
     id="loApp"
     app-id="1UsPu00000001iTKAQ"
-    components="c-lwc-embed-flow,c-session-storage">
+    components="c-lwc-embed-flow">
   </lightning-out-application>
 
   <c-lwc-embed-flow id="flowComp" style="width: 101%;"></c-lwc-embed-flow>
-  <c-session-storage id="sessionStorageComp"></c-session-storage>
-  
 
   <script>
     var storename = 'sairam';
@@ -45,18 +43,6 @@
 
         const data = await response.json();
         loApp.setAttribute('frontdoor-url', data.frontdoorUrl);
-
-        // Persist frontdoor URL and a friendly name in sessionStorage
-        try {
-          sessionStorage.setItem('frontdoorUrl', data.frontdoorUrl);
-          sessionStorage.setItem('guestName', storename);
-          const sComp = document.getElementById('sessionStorageComp');
-          if (sComp && typeof sComp.onSessionStored === 'function') {
-            sComp.onSessionStored({ frontdoorUrl: data.frontdoorUrl, guestName: storename });
-          }
-        } catch (se) {
-          console.warn('sessionStorage unavailable:', se.message);
-        }
       } catch (err) {
         console.error('Lightning Out init error:', err);
       }
@@ -72,30 +58,6 @@
         }
       }, 100);
     }
-  </script>
-
-  <script>
-    // Lightweight local `<c-session-storage>` element to expose sessionStorage
-    (function(){
-      if (customElements.get('c-session-storage')) return;
-      class CSessionStorage extends HTMLElement {
-        constructor(){ super(); }
-        connectedCallback(){
-          this.render();
-        }
-        render(){
-          this.style.display = 'none';
-        }
-        onSessionStored(data){
-          // called from init() when session values are set
-          this.dispatchEvent(new CustomEvent('sessionstored', { detail: data }));
-        }
-        get(key){ return sessionStorage.getItem(key); }
-        set(key, value){ sessionStorage.setItem(key, value); }
-        clear(){ sessionStorage.clear(); }
-      }
-      customElements.define('c-session-storage', CSessionStorage);
-    })();
   </script>
 
 </body>
