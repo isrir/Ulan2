@@ -33,17 +33,25 @@
     </div>
 
     <nav style="border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);">
-      <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:18px;padding:12px 20px;">
+      <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:12px 20px;">
         <button style="background:#b71c23;color:#fff;border:none;padding:10px 18px;border-radius:3px;font-weight:600;cursor:pointer;">Open Days</button>
-        <a href="#" style="color:#d6e0e6;text-decoration:none;padding:8px 6px;">Study</a>
-        <a href="#" style="color:#d6e0e6;text-decoration:none;padding:8px 6px;">Life</a>
-        <a href="#" style="color:#d6e0e6;text-decoration:none;padding:8px 6px;">International</a>
-        <a href="#" style="color:#d6e0e6;text-decoration:none;padding:8px 6px;">Business</a>
-        <a href="#" style="color:#d6e0e6;text-decoration:none;padding:8px 6px;">Research</a>
-        <a href="#" style="margin-left:auto;color:#d6e0e6;text-decoration:none;padding:8px 6px;">❤</a>
-        <a href="#" style="color:#d6e0e6;text-decoration:none;padding:8px 6px;">🔍</a>
+        <button id="tabProspectus" onclick="showTab('prospectus')" aria-controls="tabContentProspectus" style="background:transparent;color:#d6e0e6;border:none;padding:8px 12px;cursor:pointer;font-weight:600;border-radius:3px;">Prospectus Request</button>
+        <div style="flex:1"></div>
       </div>
     </nav>
+
+    <div id="tabsContainer" style="max-width:1200px;margin:0 auto;padding:18px 20px;">
+      <div id="tabContentProspectus" role="region" style="display:block;background:#fff;padding:12px;border-radius:3px;box-shadow:0 1px 0 rgba(0,0,0,0.04);">
+        <!-- Flow and Lightning Out will be placed here so it lives inside the Prospectus tab -->
+        <lightning-out-application
+          id="loApp"
+          app-id="1UsPu00000001iTKAQ"
+          components="c-lwc-embed-flow">
+        </lightning-out-application>
+
+        <c-lwc-embed-flow id="flowComp" style="width: 100%;"></c-lwc-embed-flow>
+      </div>
+    </div>
   </header>
 
   <lightning-out-application
@@ -86,6 +94,24 @@
         }
       }, 100);
     }
+
+    // Simple tab switching — keeps the flow inside the Prospectus tab
+    function showTab(name) {
+      const prospectus = document.getElementById('tabContentProspectus');
+      const tabBtn = document.getElementById('tabProspectus');
+      if (name === 'prospectus') {
+        prospectus.style.display = 'block';
+        tabBtn.style.color = '#fff';
+        tabBtn.style.background = '#15424b';
+      } else {
+        prospectus.style.display = 'none';
+        tabBtn.style.color = '#d6e0e6';
+        tabBtn.style.background = 'transparent';
+      }
+    }
+
+    // Default to showing the Prospectus tab so the flow is visible
+    showTab('prospectus');
   </script>
 
 </body>
