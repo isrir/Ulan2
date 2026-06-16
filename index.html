@@ -4,128 +4,61 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LWC Embed</title>
-  <script type="text/javascript" async src="https://lancashiredev--dev.sandbox.my.salesforce.com/lightning/lightning.out.latest/index.iife.prod.js"></script>
+  <script src="https://lancashiredev--dev.sandbox.my.salesforce.com/lightning/lightning.out.latest/index.iife.prod.js"></script>
   <style>
   body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #f5f7fa;
-  }
-
-  .app-shell {
-    display: grid;
-    grid-template-rows: auto 1fr;
-    height: 100vh;
-  }
-
-  .tabs {
-    display: flex;
-    gap: 0.5rem;
-    padding: 0.75rem;
-    background: #ffffff;
-    border-bottom: 1px solid #d1d5db;
-  }
-
-  .tab {
-    border: none;
-    background: transparent;
-    color: #374151;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    font-size: 0.95rem;
-    transition: background-color 0.2s ease, color 0.2s ease;
-  }
-
-  .tab:hover {
-    background: #f3f4f6;
-  }
-
-  .tab.active {
-    background: #1f2937;
-    color: #ffffff;
-  }
-
-  .panel {
-    height: calc(100vh - 60px);
-    overflow: hidden;
-    padding: 1rem;
-  }
-
-  .hidden {
-    display: none;
-  }
-
-  c-lwc-embed-flow,
-  c-session-storage {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  .session-panel {
-    display: grid;
-    gap: 1rem;
-    height: 100%;
-    background: #ffffff;
-    border-radius: 0.75rem;
-    padding: 1rem;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
-    overflow: auto;
-  }
-
-  .session-row {
-    display: grid;
-    gap: 0.5rem;
-    grid-template-columns: 140px 1fr;
-    align-items: start;
-  }
-
-  .session-label {
-    font-weight: 600;
-    color: #374151;
-  }
-
-  .session-actions {
-    margin-top: auto;
-  }
-
-  .session-actions button {
-    background: #1f2937;
-    color: #ffffff;
-    border: none;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-  }
-
-  .session-actions button:hover {
-    background: #111827;
-  }
-
-  pre {
-    margin: 0;
-    white-space: pre-wrap;
-    word-break: break-word;
-    background: #f3f4f6;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
   }
   </style>
 </head>
 <body>
-  <div class="app-shell">
-    <lightning-out-application id="loApp" app-id="1UsPu00000001iTKAQ" components="c-lwc-embed-flow,c-session-storage"></lightning-out-application>
-    <c-session-storage></c-session-storage>
-  </div>
+
+  <lightning-out-application
+    id="loApp"
+    app-id="1UsPu00000001iTKAQ"
+    components="c-lwc-embed-flow">
+  </lightning-out-application>
+
+  <c-lwc-embed-flow id="flowComp" style="width: 101%;"></c-lwc-embed-flow>
 
   <script>
-    // No-op script: using static <lightning-out-application> and <c-session-storage> only.
+    var storename = 'sairam';
+
+    async function init() {
+      try {
+        const flowComp = document.getElementById('flowComp');
+        flowComp.name = storename;
+
+        const loApp = document.getElementById('loApp');
+        const response = await fetch('/api/guest-session');
+
+        if (!response.ok) {
+          throw new Error(`Session fetch failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+        loApp.setAttribute('frontdoor-url', data.frontdoorUrl);
+      } catch (err) {
+        console.error('Lightning Out init error:', err);
+      }
+    }
+
+    if (customElements.get('lightning-out-application')) {
+      init();
+    } else {
+      const check = setInterval(() => {
+        if (customElements.get('lightning-out-application')) {
+          clearInterval(check);
+          init();
+        }
+      }, 100);
+    }
   </script>
+
 </body>
 </html>
