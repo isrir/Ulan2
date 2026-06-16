@@ -1,45 +1,153 @@
 <!DOCTYPE html>
-<html lang="en"  style="height :100%; width: 100%;">
+<html lang="en" style="height:100%; width:100%;">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LWC Embed</title>
   <script src="https://lancashiredev--dev.sandbox.my.salesforce.com/lightning/lightning.out.latest/index.iife.prod.js"></script>
-  <style>  
-  body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden; 
-  box-sizing: border-box; 
-  }
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      box-sizing: border-box;
+    }
+    .panel {
+      background: white;
+      padding: 16px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .panel label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #3e3e3c;
+    }
+    .panel input {
+      padding: 8px 12px;
+      font-size: 14px;
+      border: 1px solid #dddbda;
+      border-radius: 4px;
+      width: 260px;
+      outline: none;
+    }
+    .panel input:focus {
+      border-color: #0070d2;
+      box-shadow: 0 0 0 1px #0070d2;
+    }
+    .panel button {
+      padding: 8px 20px;
+      background: #0070d2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .panel button:hover { background: #005fb2; }
+    .panel button:disabled { background: #c9c7c5; cursor: not-allowed; }
+    #statusMsg {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 4px;
+      display: none;
+    }
+    #statusMsg.success { display:inline-block; background:#d4edda; color:#155724; }
+    #statusMsg.error   { display:inline-block; background:#f8d7da; color:#721c24; }
+    #statusMsg.info    { display:inline-block; background:#d1ecf1; color:#0c5460; }
   </style>
 </head>
 <body>
 
+  <!-- External Input Panel -->
+  <div class="panel">
+    <label for="personName">Person Name:</label>
+    <input type="text" id="personName" placeholder="Enter name" />
+    <button id="createBtn" disabled>Create Record</button>
+    <span id="statusMsg"></span>
+  </div>
+
+  <!-- Lightning Out 2 -->
   <lightning-out-application
     id="loApp"
     app-id="1UsPu00000001iTKAQ"
     components="c-lwc-embed-flow">
   </lightning-out-application>
 
-  <c-lwc-embed-flow style="width: 101%;"></c-lwc-embed-flow>
+  <c-lwc-embed-flow style="width:100%;"></c-lwc-embed-flow>
 
   <script>
+    const btn = document.getElementById('createBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    const personNameInput = document.getElementById('personName');
+
+    function showStatus(msg, type) {
+      statusMsg.textContent = msg;
+      statusMsg.className = type;
+      if (type === 'success') {
+        setTimeout(() => { statusMsg.className = ''; }, 4000);
+      }
+    }
+
+    // ✅ Listen for result back from LWC via postMessage
+    window.addEventListener('message', function(event) {
+      if (!event.data || event.data.action !== 'CREATE_RECORD_RESULT') return;
+
+      btn.disabled = false;
+      btn.textContent = 'Create Record';
+
+      if (event.data.success) {
+        showStatus('✅ Record created for: ' + event.data.name, 'success');
+        personNameInput.value = '';
+      } else {
+        showStatus('❌ Error: ' + event.data.error, 'error');
+      }
+    });
+
+    // ✅ Listen for LWC ready signal
+    window.addEventListener('message', function(event) {
+      if (!event.data || event.data.action !== 'LWC_READY') return;
+      btn.disabled = false;
+      showStatus('✅ Component ready', 'success');
+    });
+
+    // Button click — send postMessage to LWC
+    btn.addEventListener('click', function() {
+      const name = personNameInput.value.trim();
+      if (!name) {
+        showStatus('⚠️ Please enter a name', 'error');
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+      showStatus('⏳ Creating record...', 'info');
+
+      window.postMessage({ action: 'CREATE_RECORD', name: name }, '*');
+    });
+
+    // Enter key support
+    personNameInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') btn.click();
+    });
+
+    // Lightning Out 2 init
     async function init() {
       try {
-        const loApp = document.getElementById('loApp');
-        const response = await fetch('/api/guest-session');
-
-        if (!response.ok) {
-          throw new Error(`Session fetch failed: ${response.status}`);
-        }
-
-        const data = await response.json();
-        loApp.setAttribute('frontdoor-url', data.frontdoorUrl);
+        const res = await fetch('/api/guest-session');
+        if (!res.ok) throw new Error('Session failed: ' + res.status);
+        const { frontdoorUrl } = await res.json();
+        document.getElementById('loApp').setAttribute('frontdoor-url', frontdoorUrl);
       } catch (err) {
-        console.error('Lightning Out init error:', err);
+        console.error('Init error:', err);
+        showStatus('❌ Failed to load Salesforce session', 'error');
       }
     }
 
@@ -54,6 +162,5 @@
       }, 100);
     }
   </script>
-
 </body>
 </html>
