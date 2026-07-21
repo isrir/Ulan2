@@ -35,7 +35,7 @@
     <lightning-out-application
       id="loApp"
       app-id="1UsPu00000001iTKAQ"
-      components="c-lwc-embed-flow,c-sessionstorage,c-lwc-embed-omniscript">
+      components="c-lwc-embed-flow,c-sessionstorage">
     </lightning-out-application>
 
     <div id="tab-flow" class="tab-panel active">
@@ -48,8 +48,8 @@
     </div>
 
     <div id="tab-omniscript" class="tab-panel">
-      <!-- Wrapper LWC that hosts the OmniScript component -->
-      <c-lwc-embed-omniscript id="omniscriptComp" style="width: 101%; height:100%;"></c-lwc-embed-omniscript>
+      <!-- Same lwcEmbedFlow component, toggled into OmniScript mode via injectedParams -->
+      <c-lwc-embed-flow id="omniscriptComp" style="width: 101%; height:100%;"></c-lwc-embed-flow>
     </div>
   </div>
 
@@ -91,11 +91,11 @@
             sessionStorageComp.injectedParams = extractedState;
         }
 
-        // INJECT SAME EXTRACTED PARAMS INTO THE OMNISCRIPT WRAPPER
-        // (expects keys like osType, osSubtype, contextId, prefill in the URL query string)
+        // SECOND INSTANCE OF lwcEmbedFlow, TOGGLED INTO OMNISCRIPT MODE
+        // (URL params like osType, osSubtype, osLanguage are merged in; mode forces the OmniScript branch)
         const omniscriptComp = document.getElementById('omniscriptComp');
         if (omniscriptComp) {
-            omniscriptComp.injectedParams = extractedState;
+            omniscriptComp.injectedParams = { ...extractedState, mode: 'omniscript' };
         }
 
         //  INITIALIZE SECURE LIGHTNING OUT CONTAINER
