@@ -28,7 +28,6 @@
     <div class="tabs" role="tablist">
       <button class="tab active" role="tab" aria-selected="true" data-target="tab-flow">Flow</button>
       <button class="tab" role="tab" aria-selected="false" data-target="tab-session">Session Storage</button>
-      <button class="tab" role="tab" aria-selected="false" data-target="tab-omniscript">OmniScript</button>
     </div>
 
     <!-- Lightning Out 2.0 Web Component Container Definition -->
@@ -45,11 +44,6 @@
     <div id="tab-session" class="tab-panel">
       <!-- Your custom sessionStorage component -->
       <c-sessionstorage id="sessionStorage" style="width: 101%; height:100%;" ></c-sessionstorage>
-    </div>
-
-    <div id="tab-omniscript" class="tab-panel">
-      <!-- Same lwcEmbedFlow component, toggled into OmniScript mode via injectedParams -->
-      <c-lwc-embed-flow id="omniscriptComp" style="width: 101%; height:100%;"></c-lwc-embed-flow>
     </div>
   </div>
 
@@ -78,7 +72,7 @@
         // EXTRACT URL PARAMETERS VIA STANDARD BROWSER APIS
         const urlParams = new URLSearchParams(window.location.search);
         const extractedState = {};
-
+        
         // Loop through all URL parameters and convert them to a plain JavaScript Object
         for (const [key, value] of urlParams.entries()) {
             extractedState[key] = value;
@@ -89,13 +83,6 @@
         if (sessionStorageComp) {
             // Mapping public property using JavaScript object assignment
             sessionStorageComp.injectedParams = extractedState;
-        }
-
-        // SECOND INSTANCE OF lwcEmbedFlow, TOGGLED INTO OMNISCRIPT MODE
-        // (URL params like osType, osSubtype, osLanguage are merged in; mode forces the OmniScript branch)
-        const omniscriptComp = document.getElementById('omniscriptComp');
-        if (omniscriptComp) {
-            omniscriptComp.injectedParams = { ...extractedState, mode: 'omniscript' };
         }
 
         //  INITIALIZE SECURE LIGHTNING OUT CONTAINER
