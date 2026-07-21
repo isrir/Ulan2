@@ -28,13 +28,14 @@
     <div class="tabs" role="tablist">
       <button class="tab active" role="tab" aria-selected="true" data-target="tab-flow">Flow</button>
       <button class="tab" role="tab" aria-selected="false" data-target="tab-session">Session Storage</button>
+      <button class="tab" role="tab" aria-selected="false" data-target="tab-omniscript">OmniScript</button>
     </div>
 
     <!-- Lightning Out 2.0 Web Component Container Definition -->
     <lightning-out-application
       id="loApp"
       app-id="1UsPu00000001iTKAQ"
-      components="c-lwc-embed-flow,c-sessionstorage">
+      components="c-lwc-embed-flow,c-sessionstorage,c-lwc-embed-omniscript">
     </lightning-out-application>
 
     <div id="tab-flow" class="tab-panel active">
@@ -44,6 +45,11 @@
     <div id="tab-session" class="tab-panel">
       <!-- Your custom sessionStorage component -->
       <c-sessionstorage id="sessionStorage" style="width: 101%; height:100%;" ></c-sessionstorage>
+    </div>
+
+    <div id="tab-omniscript" class="tab-panel">
+      <!-- Wrapper LWC that hosts the OmniScript component -->
+      <c-lwc-embed-omniscript id="omniscriptComp" style="width: 101%; height:100%;"></c-lwc-embed-omniscript>
     </div>
   </div>
 
@@ -72,7 +78,7 @@
         // EXTRACT URL PARAMETERS VIA STANDARD BROWSER APIS
         const urlParams = new URLSearchParams(window.location.search);
         const extractedState = {};
-        
+
         // Loop through all URL parameters and convert them to a plain JavaScript Object
         for (const [key, value] of urlParams.entries()) {
             extractedState[key] = value;
@@ -83,6 +89,13 @@
         if (sessionStorageComp) {
             // Mapping public property using JavaScript object assignment
             sessionStorageComp.injectedParams = extractedState;
+        }
+
+        // INJECT SAME EXTRACTED PARAMS INTO THE OMNISCRIPT WRAPPER
+        // (expects keys like osType, osSubtype, contextId, prefill in the URL query string)
+        const omniscriptComp = document.getElementById('omniscriptComp');
+        if (omniscriptComp) {
+            omniscriptComp.injectedParams = extractedState;
         }
 
         //  INITIALIZE SECURE LIGHTNING OUT CONTAINER
